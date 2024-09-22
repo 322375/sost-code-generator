@@ -16,20 +16,33 @@ import java.io.Writer;
  */
 public class DynamicGenerator {
     public static void main(String[] args) throws IOException, TemplateException {
+       String projectPath = System.getProperty("user.dir");
+       String inputPath = projectPath + File.separator + "src/main/resource/templates/MainTemplate.java.ftl";
+       String outputPath = projectPath + File.separator + "MainTemplate.java";
+       MainTemplateConfig mainTemplateConfig = new MainTemplateConfig();
+       mainTemplateConfig.setAuthor("yishui");
+       mainTemplateConfig.setLoop(false);
+       mainTemplateConfig.setOutputText("求和结果：");
+       doGenerate(inputPath, outputPath, mainTemplateConfig);
+;    }
+
+    public static void doGenerate(String inputPath, String outputPath, Object model) throws IOException, TemplateException {
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_32);
-        configuration.setDirectoryForTemplateLoading(new File("src/main/resources/templates"));
+        File templateDir = new File(inputPath).getParentFile();
+        configuration.setDirectoryForTemplateLoading(templateDir);
         configuration.setDefaultEncoding("utf-8");
 
         // 创建模板对象
-        Template template = configuration.getTemplate("MainTemplate.java.ftl");
+        String templateName = new File(inputPath).getName();
+        Template template = configuration.getTemplate(templateName);
 
         // 创建数据模型
         MainTemplateConfig mainTemplateConfig = new MainTemplateConfig();
-        mainTemplateConfig.setAuthor("易水");
+        mainTemplateConfig.setAuthor("yishui");
         mainTemplateConfig.setLoop(false);
         mainTemplateConfig.setOutputText("求和结果：");
 
-        Writer out = new FileWriter(new File("MainTemplate.java"));
+        Writer out = new FileWriter(outputPath);
         template.process(mainTemplateConfig, out);
         out.close();
     }
